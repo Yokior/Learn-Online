@@ -34,7 +34,7 @@
     </properties>
 
 
-<!--    <dependencyManagement>-->
+    <dependencyManagement>
         <dependencies>
 
             <dependency>
@@ -184,7 +184,7 @@
                 <version>${elasticsearch.version}</version>
             </dependency>
         </dependencies>
-
+    </dependencyManagement>
 
     <build>
         <finalName>${project.name}</finalName>
