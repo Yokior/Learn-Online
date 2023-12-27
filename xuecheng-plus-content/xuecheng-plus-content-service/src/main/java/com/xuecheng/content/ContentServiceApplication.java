@@ -1,6 +1,5 @@
-package com.xuecheng;
+package com.xuecheng.content;
 
-import com.spring4all.swagger.EnableSwagger2Doc;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -9,9 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @Auther：Yokior
  * @Date：2023/12/26 17:43
  */
-@EnableSwagger2Doc
 @SpringBootApplication
-public class ContentApplication
+public class ContentServiceApplication
 {
     public static void main(String[] args)
     {

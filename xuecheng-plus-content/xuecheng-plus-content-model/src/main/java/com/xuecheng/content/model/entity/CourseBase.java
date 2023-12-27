@@ -2,6 +2,7 @@ package com.xuecheng.content.model.entity;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -16,6 +17,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class CourseBase {
     //主键
     private Long id;
