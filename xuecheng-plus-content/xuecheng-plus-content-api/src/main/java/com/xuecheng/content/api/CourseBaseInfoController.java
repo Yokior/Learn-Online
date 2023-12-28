@@ -4,8 +4,10 @@ import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
 import com.xuecheng.content.model.dto.QueryCourseParamsDto;
 import com.xuecheng.content.model.entity.CourseBase;
+import com.xuecheng.content.service.CourseBaseInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +26,10 @@ import java.util.ArrayList;
 @RequestMapping("/course")
 public class CourseBaseInfoController
 {
+
+    @Autowired
+    private CourseBaseInfoService courseBaseInfoService;
+
     /**
      * 分页条件查询
      * @param pageParams
@@ -34,6 +40,8 @@ public class CourseBaseInfoController
     @PostMapping("/list")
     public PageResult<CourseBase> list(PageParams pageParams, @RequestBody QueryCourseParamsDto queryCourseParamsDto)
     {
-        return null;
+        PageResult<CourseBase> pageResult = courseBaseInfoService.queryCourseBaseList(pageParams, queryCourseParamsDto);
+
+        return pageResult;
     }
 }

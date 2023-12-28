@@ -15,6 +15,6 @@ public class ContentApplication
 {
     public static void main(String[] args)
     {
-        SpringApplication.run(ContentServiceApplication.class, args);
+        SpringApplication.run(ContentApplication.class, args);
     }
 }

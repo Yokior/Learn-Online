@@ -2,9 +2,12 @@ package com.xuecheng.content;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
 import com.xuecheng.content.mapper.CourseBaseMapper;
+import com.xuecheng.content.model.dto.QueryCourseParamsDto;
 import com.xuecheng.content.model.entity.CourseBase;
+import com.xuecheng.content.service.CourseBaseInfoService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +25,9 @@ public class ContentServiceTestApplication
 
     @Autowired
     private CourseBaseMapper courseBaseMapper;
+
+    @Autowired
+    private CourseBaseInfoService courseBaseInfoService;
 
     /**
      * 分页查询测试
@@ -45,6 +51,22 @@ public class ContentServiceTestApplication
                 .pageSize((long) 2)
                 .counts(courseBasePage.getTotal())
                 .build();
+
+        System.out.println(pageResult);
+
+    }
+
+    @Test
+    public void testCourseBaseInfoService()
+    {
+        QueryCourseParamsDto queryCourseParamsDto = new QueryCourseParamsDto();
+        queryCourseParamsDto.setCourseName("java");
+
+        PageParams pageParams = new PageParams();
+        pageParams.setPageNo(1L);
+        pageParams.setPageSize(5L);
+
+        PageResult<CourseBase> pageResult = courseBaseInfoService.queryCourseBaseList(pageParams, queryCourseParamsDto);
 
         System.out.println(pageResult);
 
