@@ -10,6 +10,7 @@ import com.xuecheng.content.model.entity.CourseBase;
 import com.xuecheng.content.service.CourseBaseInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
  * @Description：
@@ -34,9 +35,9 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService
     {
         // 拼装查询条件
         LambdaQueryWrapper<CourseBase> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(queryCourseParamsDto.getAuditStatus() != null, CourseBase::getAuditStatus, queryCourseParamsDto.getAuditStatus());
-        lqw.like(queryCourseParamsDto.getCourseName() != null, CourseBase::getName, queryCourseParamsDto.getCourseName());
-        lqw.eq(queryCourseParamsDto.getPublishStatus() != null, CourseBase::getStatus, queryCourseParamsDto.getPublishStatus());
+        lqw.eq(StringUtils.hasText(queryCourseParamsDto.getAuditStatus()), CourseBase::getAuditStatus, queryCourseParamsDto.getAuditStatus());
+        lqw.like(StringUtils.hasText(queryCourseParamsDto.getCourseName()), CourseBase::getName, queryCourseParamsDto.getCourseName());
+        lqw.eq(StringUtils.hasText(queryCourseParamsDto.getPublishStatus()), CourseBase::getStatus, queryCourseParamsDto.getPublishStatus());
 
         // 分页
         Page<CourseBase> page = new Page<>(pageParams.getPageNo(), pageParams.getPageSize());
