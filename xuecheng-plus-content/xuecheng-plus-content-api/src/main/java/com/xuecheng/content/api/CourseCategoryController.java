@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @Description：
  * @Auther：Yokior
@@ -26,10 +28,10 @@ public class CourseCategoryController
 
     @ApiOperation("分类根节点查询")
     @GetMapping("/tree-nodes")
-    public CourseCategoryTreeDto queryTreeNodes()
+    public List<CourseCategoryTreeDto> queryTreeNodes()
     {
-        CourseCategoryTreeDto courseCategoryTreeDto = courseCategoryService.queryTreeNodes();
+        List<CourseCategoryTreeDto> treeDtoList = courseCategoryService.queryTreeNodes();
 
-        return courseCategoryTreeDto;
+        return treeDtoList;
     }
 }

@@ -33,14 +33,17 @@ public class CourseCategoryServiceImpl implements CourseCategoryService
      * @return
      */
     @Override
-    public CourseCategoryTreeDto queryTreeNodes()
+    public List<CourseCategoryTreeDto> queryTreeNodes()
     {
         CourseCategoryTreeDto treeDto = new CourseCategoryTreeDto();
-        totalCategoryList = courseCategoryMapper.selectList(null);
+        LambdaQueryWrapper<CourseCategory> lqw = new LambdaQueryWrapper<>();
+        lqw.orderByAsc(CourseCategory::getOrderby);
+        totalCategoryList = courseCategoryMapper.selectList(lqw);
         // 查询自身的子节点
         buildChildrenNodes("1",treeDto);
 
-        return treeDto;
+        // 返回去除根节点
+        return treeDto.getChildrenTreeNodes();
     }
 
     /**

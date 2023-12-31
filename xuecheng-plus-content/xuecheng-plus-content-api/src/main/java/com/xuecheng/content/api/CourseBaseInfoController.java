@@ -2,6 +2,8 @@ package com.xuecheng.content.api;
 
 import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
+import com.xuecheng.content.model.dto.AddCourseDto;
+import com.xuecheng.content.model.dto.CourseBaseInfoDto;
 import com.xuecheng.content.model.dto.QueryCourseParamsDto;
 import com.xuecheng.content.model.entity.CourseBase;
 import com.xuecheng.content.service.CourseBaseInfoService;
@@ -23,7 +25,6 @@ import java.util.ArrayList;
  */
 @Api(value = "课程信息管理接口", tags = "课程信息管理接口")
 @RestController
-@RequestMapping("/course")
 public class CourseBaseInfoController
 {
 
@@ -37,11 +38,25 @@ public class CourseBaseInfoController
      * @return
      */
     @ApiOperation("课程查询接口")
-    @PostMapping("/list")
+    @PostMapping("/course/list")
     public PageResult<CourseBase> list(PageParams pageParams, @RequestBody QueryCourseParamsDto queryCourseParamsDto)
     {
         PageResult<CourseBase> pageResult = courseBaseInfoService.queryCourseBaseList(pageParams, queryCourseParamsDto);
 
         return pageResult;
     }
+
+
+    /**
+     * 新增课程
+     * @param addCourseDto
+     * @return
+     */
+    @ApiOperation("新增课程")
+    @PostMapping("/content/course")
+    public CourseBaseInfoDto createCourseBase(@RequestBody AddCourseDto addCourseDto)
+    {
+        return null;
+    }
+
 }

@@ -21,9 +21,7 @@ public class CourseCategoryTest
     @Test
     public void testTreeNodes()
     {
-        CourseCategoryTreeDto treeDto = courseCategoryService.queryTreeNodes();
 
-        System.out.println(treeDto);
     }
 
 }

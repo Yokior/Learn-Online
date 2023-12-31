@@ -1,6 +1,9 @@
 package com.xuecheng.content.model.entity;
 
 import java.time.LocalDateTime;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -44,8 +47,10 @@ public class CourseBase {
     //课程图片
     private String pic;
     //创建时间
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createDate;
     //修改时间
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime changeDate;
     //创建人
     private String createPeople;

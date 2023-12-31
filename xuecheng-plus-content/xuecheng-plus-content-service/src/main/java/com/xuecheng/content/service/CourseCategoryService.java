@@ -2,6 +2,8 @@ package com.xuecheng.content.service;
 
 import com.xuecheng.content.model.dto.CourseCategoryTreeDto;
 
+import java.util.List;
+
 /**
  * @Description：
  * @Auther：Yokior
@@ -10,5 +12,5 @@ import com.xuecheng.content.model.dto.CourseCategoryTreeDto;
 public interface CourseCategoryService
 {
     // 课程分类树形结构
-    CourseCategoryTreeDto queryTreeNodes();
+    List<CourseCategoryTreeDto> queryTreeNodes();
 }
