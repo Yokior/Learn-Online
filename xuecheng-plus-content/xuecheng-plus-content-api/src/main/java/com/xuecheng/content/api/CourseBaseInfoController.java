@@ -25,6 +25,7 @@ import java.util.ArrayList;
  */
 @Api(value = "课程信息管理接口", tags = "课程信息管理接口")
 @RestController
+@RequestMapping("/course")
 public class CourseBaseInfoController
 {
 
@@ -38,7 +39,7 @@ public class CourseBaseInfoController
      * @return
      */
     @ApiOperation("课程查询接口")
-    @PostMapping("/course/list")
+    @PostMapping("/list")
     public PageResult<CourseBase> list(PageParams pageParams, @RequestBody QueryCourseParamsDto queryCourseParamsDto)
     {
         PageResult<CourseBase> pageResult = courseBaseInfoService.queryCourseBaseList(pageParams, queryCourseParamsDto);
@@ -53,10 +54,15 @@ public class CourseBaseInfoController
      * @return
      */
     @ApiOperation("新增课程")
-    @PostMapping("/content/course")
+    @PostMapping
     public CourseBaseInfoDto createCourseBase(@RequestBody AddCourseDto addCourseDto)
     {
-        return null;
+
+        Long companyId = 1232141425L;
+
+        CourseBaseInfoDto courseBaseInfoDto = courseBaseInfoService.createCourseBase(companyId, addCourseDto);
+
+        return courseBaseInfoDto;
     }
 
 }

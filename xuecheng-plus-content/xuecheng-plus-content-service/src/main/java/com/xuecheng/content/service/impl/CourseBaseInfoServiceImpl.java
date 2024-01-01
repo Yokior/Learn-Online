@@ -139,7 +139,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService
         Long courseId = courseBaseNew.getId();
         BeanUtils.copyProperties(dto, courseMarketNew);
         // 课程的Id
-        courseBaseNew.setId(courseId);
+        courseMarketNew.setId(courseId);
         int save = saveCourseMarket(courseMarketNew);
         if (save <= 0)
         {
