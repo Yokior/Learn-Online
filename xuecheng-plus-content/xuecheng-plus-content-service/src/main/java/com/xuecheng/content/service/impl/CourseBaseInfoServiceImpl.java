@@ -83,40 +83,40 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService
     {
         // 数据校验
         //合法性校验
-        if (StringUtils.isEmpty(dto.getName()))
-        {
-            XueChengPlusException.cast("课程名称不能为空");
-        }
-
-        if (StringUtils.isEmpty(dto.getMt()))
-        {
-            XueChengPlusException.cast("课程分类不能为空");
-        }
-
-        if (StringUtils.isEmpty(dto.getSt()))
-        {
-            XueChengPlusException.cast("课程分类不能为空");
-        }
-
-        if (StringUtils.isEmpty(dto.getGrade()))
-        {
-            XueChengPlusException.cast("课程等级不能为空");
-        }
-
-        if (StringUtils.isEmpty(dto.getTeachmode()))
-        {
-            XueChengPlusException.cast("课程教育模式不能为空");
-        }
-
-        if (StringUtils.isEmpty(dto.getUsers()))
-        {
-            XueChengPlusException.cast("适应人群不能为空");
-        }
-
-        if (StringUtils.isEmpty(dto.getCharge()))
-        {
-            XueChengPlusException.cast("收费规则不能为空");
-        }
+//        if (StringUtils.isEmpty(dto.getName()))
+//        {
+//            XueChengPlusException.cast("课程名称不能为空");
+//        }
+//
+//        if (StringUtils.isEmpty(dto.getMt()))
+//        {
+//            XueChengPlusException.cast("课程分类不能为空");
+//        }
+//
+//        if (StringUtils.isEmpty(dto.getSt()))
+//        {
+//            XueChengPlusException.cast("课程分类不能为空");
+//        }
+//
+//        if (StringUtils.isEmpty(dto.getGrade()))
+//        {
+//            XueChengPlusException.cast("课程等级不能为空");
+//        }
+//
+//        if (StringUtils.isEmpty(dto.getTeachmode()))
+//        {
+//            XueChengPlusException.cast("课程教育模式不能为空");
+//        }
+//
+//        if (StringUtils.isEmpty(dto.getUsers()))
+//        {
+//            XueChengPlusException.cast("适应人群不能为空");
+//        }
+//
+//        if (StringUtils.isEmpty(dto.getCharge()))
+//        {
+//            XueChengPlusException.cast("收费规则不能为空");
+//        }
 
         // 向course_base写入数据
         CourseBase courseBaseNew = new CourseBase();

@@ -1,10 +1,17 @@
 package com.xuecheng.base.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 @Component
@@ -21,6 +28,21 @@ public class GlobalExceptionHandler
         log.error("业务异常：{}",e.getErrMessage());
 
         return new RestErrorResponse(e.getErrMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public RestErrorResponse handlerServiceException(MethodArgumentNotValidException e)
+    {
+        // 记录异常信息
+        BindingResult bindingResult = e.getBindingResult();
+        List<String> errorList = bindingResult.getFieldErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.toList());
+
+        // 将list信息错误信息拼接
+        String errMessage = StringUtils.join(errorList, ",");
+
+        return new RestErrorResponse(errMessage);
     }
 
 
