@@ -1,10 +1,10 @@
 package com.xuecheng.content.api;
 
-import com.xuecheng.base.exception.ValidationGroups;
 import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
 import com.xuecheng.content.model.dto.AddCourseDto;
 import com.xuecheng.content.model.dto.CourseBaseInfoDto;
+import com.xuecheng.content.model.dto.EditCourseDto;
 import com.xuecheng.content.model.dto.QueryCourseParamsDto;
 import com.xuecheng.content.model.entity.CourseBase;
 import com.xuecheng.content.service.CourseBaseInfoService;
@@ -12,13 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Description：
@@ -63,6 +57,28 @@ public class CourseBaseInfoController
         Long companyId = 1232141425L;
 
         CourseBaseInfoDto courseBaseInfoDto = courseBaseInfoService.createCourseBase(companyId, addCourseDto);
+
+        return courseBaseInfoDto;
+    }
+
+
+    @ApiOperation("根据课程id查询课程基本信息")
+    @GetMapping("/{courseId}")
+    public CourseBaseInfoDto getCourseBaseById(@PathVariable Long courseId)
+    {
+        CourseBaseInfoDto courseBaseInfo = courseBaseInfoService.getCourseBaseInfo(courseId);
+
+        return courseBaseInfo;
+    }
+
+
+    @ApiOperation("修改课程信息")
+    @PutMapping
+    public CourseBaseInfoDto updateCourseBase(@RequestBody @Validated EditCourseDto editCourseDto)
+    {
+        Long companyId = 1232141425L;
+
+        CourseBaseInfoDto courseBaseInfoDto = courseBaseInfoService.updateCourseBaseInfo(companyId, editCourseDto);
 
         return courseBaseInfoDto;
     }
