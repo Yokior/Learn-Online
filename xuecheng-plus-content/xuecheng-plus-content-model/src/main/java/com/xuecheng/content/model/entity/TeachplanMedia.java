@@ -1,6 +1,9 @@
 package com.xuecheng.content.model.entity;
 
 import java.time.LocalDateTime;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +30,7 @@ public class TeachplanMedia {
     private Long courseId;
     //媒资文件原始名称
     private String mediaFilename;
-    
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createDate;
     //创建人
     private String createPeople;

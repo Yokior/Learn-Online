@@ -49,7 +49,7 @@ public class GlobalExceptionHandler
     @ExceptionHandler(Exception.class)
     public RestErrorResponse handlerException(Exception e)
     {
-        log.error("系统异常：{}",e.getMessage());
+        log.error("系统异常：{}",e);
 
         return new RestErrorResponse(CommonError.UNKOWN_ERROR);
     }

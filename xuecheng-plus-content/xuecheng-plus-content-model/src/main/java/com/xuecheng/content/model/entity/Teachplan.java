@@ -1,6 +1,9 @@
 package com.xuecheng.content.model.entity;
 
 import java.time.LocalDateTime;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -46,8 +49,10 @@ public class Teachplan {
     //是否支持试学或预览（试看）
     private String isPreview;
     //创建时间
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createDate;
     //修改时间
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime changeDate;
 
 }

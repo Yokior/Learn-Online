@@ -1,0 +1,16 @@
+package com.xuecheng.content.service;
+
+import com.xuecheng.content.model.dto.TeachplanDto;
+
+import java.util.List;
+
+/**
+ * @Description：
+ * @Auther：Yokior
+ * @Date：2024/1/5 14:54
+ */
+public interface TeachplanService
+{
+    // 根据课程Id获取课程计划树
+    List<TeachplanDto> getTreeNodes(Long courseId);
+}

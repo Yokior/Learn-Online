@@ -196,7 +196,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService
     public CourseBaseInfoDto updateCourseBaseInfo(Long companyId, EditCourseDto editCourseDto)
     {
         // 查询课程基本信息
-        Long courseId = editCourseDto.getCourseId();
+        Long courseId = editCourseDto.getId();
         CourseBase courseBase = courseBaseMapper.selectById(courseId);
         if (courseBase == null)
         {

@@ -17,5 +17,5 @@ public class EditCourseDto extends AddCourseDto
 {
     @NotNull(message = "课程id不能为空")
     @ApiModelProperty(value = "课程ID", required = true)
-    private Long courseId;
+    private Long id;
 }
