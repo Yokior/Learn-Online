@@ -1,9 +1,11 @@
 package com.xuecheng.content.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xuecheng.base.exception.XueChengPlusException;
 import com.xuecheng.content.mapper.TeachplanMapper;
 import com.xuecheng.content.mapper.TeachplanMediaMapper;
 import com.xuecheng.content.model.dto.CourseCategoryTreeDto;
+import com.xuecheng.content.model.dto.SaveTeachplanDto;
 import com.xuecheng.content.model.dto.TeachplanDto;
 import com.xuecheng.content.model.entity.CourseCategory;
 import com.xuecheng.content.model.entity.Teachplan;
@@ -38,13 +40,19 @@ public class TeachplanServiceImpl implements TeachplanService
 
     /**
      * 根据课程id获取课程计划树
+     *
      * @param courseId
      * @return
      */
     @Override
     public List<TeachplanDto> getTreeNodes(Long courseId)
     {
-        this.dbTeachplanList = teachplanMapper.selectList(null);
+        // 排序
+        LambdaQueryWrapper<Teachplan> lqw = new LambdaQueryWrapper<>();
+        lqw.orderByAsc(Teachplan::getCourseId);
+        lqw.orderByAsc(Teachplan::getOrderby);
+
+        this.dbTeachplanList = teachplanMapper.selectList(lqw);
         this.dbTeachplanMediaList = teachplanMediaMapper.selectList(null);
 
         if (dbTeachplanList.isEmpty() || dbTeachplanMediaList.isEmpty())
@@ -64,7 +72,51 @@ public class TeachplanServiceImpl implements TeachplanService
     }
 
     /**
+     * 新增 修改 课程计划
+     *
+     * @param saveTeachplanDto
+     */
+    @Override
+    public void saveTeachplan(SaveTeachplanDto saveTeachplanDto)
+    {
+        // 根据课程id判断是新增还是修改
+        Long teachplanId = saveTeachplanDto.getId();
+        if (teachplanId == null)
+        {
+            // 新增操作
+            Teachplan teachplan = new Teachplan();
+            BeanUtils.copyProperties(saveTeachplanDto, teachplan);
+            // 确定排序字段
+            Long parentid = teachplan.getParentid();
+
+            Integer max = teachplanMapper.getOrderbyMax(parentid, teachplan.getCourseId());
+            // 如果max为空 默认为1 (0+1)
+            if (max == null)
+            {
+                max = 0;
+            }
+            teachplan.setOrderby(max + 1);
+
+            teachplanMapper.insert(teachplan);
+        }
+        else
+        {
+            // 修改操作
+            Teachplan teachplan = teachplanMapper.selectById(teachplanId);
+            if (teachplan == null)
+            {
+                XueChengPlusException.cast("课程计划不存在");
+            }
+            BeanUtils.copyProperties(saveTeachplanDto, teachplan);
+            teachplanMapper.updateById(teachplan);
+        }
+
+
+    }
+
+    /**
      * 根据课程计划id构造子节点树
+     *
      * @param courseId
      * @param head
      */
