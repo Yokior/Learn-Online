@@ -2,7 +2,9 @@ package com.xuecheng.media.api;
 
 import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
+import com.xuecheng.base.model.SystemCommon;
 import com.xuecheng.media.model.dto.QueryMediaParamsDto;
+import com.xuecheng.media.model.dto.UploadFileParamsDto;
 import com.xuecheng.media.model.dto.UploadFileResultDto;
 import com.xuecheng.media.model.po.MediaFiles;
 import com.xuecheng.media.service.MediaFileService;
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Mr.M
@@ -41,9 +46,24 @@ public class MediaFilesController
 
     @ApiOperation("上传图片")
     @PostMapping("/upload/coursefile")
-    public UploadFileResultDto upload(@RequestParam("filedata") MultipartFile filedata)
+    public UploadFileResultDto upload(@RequestParam("filedata") MultipartFile filedata) throws IOException
     {
-        return null;
+        // 准备文件的上传信息
+        UploadFileParamsDto uploadFileParamsDto = new UploadFileParamsDto();
+        uploadFileParamsDto.setFilename(filedata.getOriginalFilename());
+        uploadFileParamsDto.setFileSize(filedata.getSize());
+        uploadFileParamsDto.setFileType(SystemCommon.RESOURCE_TYPE_IMAGE);
+
+        File tempFile = File.createTempFile("minio", ".temp");
+        filedata.transferTo(tempFile);
+        // 服务器文件路径
+        String filePath = tempFile.getAbsolutePath();
+
+        Long companyId = 1232141425L;
+
+        UploadFileResultDto uploadFileResultDto = mediaFileService.uploadFile(companyId, uploadFileParamsDto, filePath);
+
+        return uploadFileResultDto;
     }
 
 

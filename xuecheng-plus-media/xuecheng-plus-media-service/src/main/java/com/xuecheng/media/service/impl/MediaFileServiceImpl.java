@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import java.io.File;
@@ -50,6 +51,9 @@ public class MediaFileServiceImpl implements MediaFileService
 
     @Autowired
     private MinioClient minioClient;
+
+    @Autowired
+    private MediaFileService mediaProxy;
 
     @Value("${minio.bucket.files}")
     private String bucket_mediafiles;
@@ -109,7 +113,7 @@ public class MediaFileServiceImpl implements MediaFileService
         }
 
         // 将文件信息保存到数据库
-        MediaFiles mediaFiles = saveFileInfo2DB(companyId, uploadFileParamsDto, md5, bucket_mediafiles, objectName);
+        MediaFiles mediaFiles = mediaProxy.saveFileInfo2DB(companyId, uploadFileParamsDto, md5, bucket_mediafiles, objectName);
         if (mediaFiles == null)
         {
             XueChengPlusException.cast("文件上传后保存信息失败");
@@ -128,7 +132,9 @@ public class MediaFileServiceImpl implements MediaFileService
      * @param uploadFileParamsDto
      * @param md5
      */
-    private MediaFiles saveFileInfo2DB(Long companyId, UploadFileParamsDto uploadFileParamsDto, String md5, String bucket, String objectName)
+    @Transactional
+    @Override
+    public MediaFiles saveFileInfo2DB(Long companyId, UploadFileParamsDto uploadFileParamsDto, String md5, String bucket, String objectName)
     {
         MediaFiles dbMediaFiles = mediaFilesMapper.selectById(md5);
         MediaFiles mediaFiles = new MediaFiles();
@@ -188,7 +194,7 @@ public class MediaFileServiceImpl implements MediaFileService
      */
     private String getDefaultFolderPath()
     {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy-MM-dd");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String folder = simpleDateFormat.format(new Date()).replace("-", "/") + "/";
         return folder;
     }

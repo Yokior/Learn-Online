@@ -19,4 +19,7 @@ public class SystemCommon
     // 对象 审核状态 审核通过
     public static final String OBJ_AUDIT_PASS = "002003";
 
+    // 资源类型 图片
+    public static final String RESOURCE_TYPE_IMAGE = "001001";
+
 }

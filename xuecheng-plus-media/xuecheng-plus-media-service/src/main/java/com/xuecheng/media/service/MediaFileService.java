@@ -39,4 +39,6 @@ public interface MediaFileService
     UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto, String localFilePath);
 
 
+    MediaFiles saveFileInfo2DB(Long companyId, UploadFileParamsDto uploadFileParamsDto, String md5, String bucket, String objectName);
+
 }
