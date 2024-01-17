@@ -1,5 +1,6 @@
 package com.xuecheng.media.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.j256.simplemagic.ContentInfo;
@@ -8,6 +9,7 @@ import com.xuecheng.base.exception.CommonError;
 import com.xuecheng.base.exception.XueChengPlusException;
 import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
+import com.xuecheng.base.model.SystemCommon;
 import com.xuecheng.media.mapper.MediaFilesMapper;
 import com.xuecheng.media.model.dto.QueryMediaParamsDto;
 import com.xuecheng.media.model.dto.UploadFileParamsDto;
@@ -16,6 +18,8 @@ import com.xuecheng.media.model.po.MediaFiles;
 import com.xuecheng.media.service.MediaFileService;
 import io.minio.MinioClient;
 import io.minio.UploadObjectArgs;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -37,6 +41,7 @@ import java.util.List;
  * @date 2022/9/10 8:58
  */
 @Service
+@Slf4j
 public class MediaFileServiceImpl implements MediaFileService
 {
 
@@ -97,17 +102,65 @@ public class MediaFileServiceImpl implements MediaFileService
         // 生成文件名
         String objectName = defaultFolderPath + md5 + extension;
 
-        uploadFile2Minio(bucket_mediafiles,localFilePath,minType,objectName);
+        Boolean result = uploadFile2Minio(bucket_mediafiles, localFilePath, minType, objectName);
+        if (!result)
+        {
+            XueChengPlusException.cast("文件上传失败");
+        }
 
         // 将文件信息保存到数据库
+        MediaFiles mediaFiles = saveFileInfo2DB(companyId, uploadFileParamsDto, md5, bucket_mediafiles, objectName);
+        if (mediaFiles == null)
+        {
+            XueChengPlusException.cast("文件上传后保存信息失败");
+        }
 
+        UploadFileResultDto uploadFileResultDto = new UploadFileResultDto();
+        BeanUtils.copyProperties(mediaFiles,uploadFileResultDto);
 
-        return null;
+        return uploadFileResultDto;
+    }
+
+    /**
+     * 将文件信息保存在数据库
+     *
+     * @param companyId
+     * @param uploadFileParamsDto
+     * @param md5
+     */
+    private MediaFiles saveFileInfo2DB(Long companyId, UploadFileParamsDto uploadFileParamsDto, String md5, String bucket, String objectName)
+    {
+        MediaFiles dbMediaFiles = mediaFilesMapper.selectById(md5);
+        MediaFiles mediaFiles = new MediaFiles();
+        if (dbMediaFiles == null)
+        {
+            // 数据库没有信息 保存信息
+            BeanUtils.copyProperties(uploadFileParamsDto, mediaFiles);
+            mediaFiles.setId(md5);
+            mediaFiles.setCompanyId(companyId);
+            mediaFiles.setBucket(bucket);
+            mediaFiles.setFilePath(objectName);
+            mediaFiles.setFileId(md5);
+            mediaFiles.setUrl("/" + bucket + "/" + objectName);
+            // 状态
+            mediaFiles.setStatus("1");
+            // 审核状态
+            mediaFiles.setAuditStatus(SystemCommon.OBJ_AUDIT_PASS);
+
+            int insert = mediaFilesMapper.insert(mediaFiles);
+            if (insert <= 0)
+            {
+                log.error("保存文件信息失败,文件信息:{}", JSON.toJSONString(mediaFiles));
+                return null;
+            }
+        }
+        return mediaFiles;
     }
 
 
     /**
      * 获取文件的md5
+     *
      * @return
      */
     private String getFileMD5(File file)
@@ -130,6 +183,7 @@ public class MediaFileServiceImpl implements MediaFileService
     /**
      * 根据当前日期获取目录路径
      * 2024/1/16
+     *
      * @return
      */
     private String getDefaultFolderPath()
@@ -142,6 +196,7 @@ public class MediaFileServiceImpl implements MediaFileService
 
     /**
      * 上传文件到Minio
+     *
      * @param bucket
      * @param localFilePath
      * @param minType

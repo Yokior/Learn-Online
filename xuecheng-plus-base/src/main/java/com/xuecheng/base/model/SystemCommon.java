@@ -10,10 +10,13 @@ public class SystemCommon
     // 课程状态 收费
     public static final String COURSE_CHARGE = "201001";
 
-    // 审核状态 未提交
+    // 课程 审核状态 未提交
     public static final String AUDIT_NOT_PUBLISH = "202002";
 
-    // 发布状态 未发布
+    // 课程 发布状态 未发布
     public static final String STATUS_NOT_PUBLISH = "203001";
+
+    // 对象 审核状态 审核通过
+    public static final String OBJ_AUDIT_PASS = "002003";
 
 }
