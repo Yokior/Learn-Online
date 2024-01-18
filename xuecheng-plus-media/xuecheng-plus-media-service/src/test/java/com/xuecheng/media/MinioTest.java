@@ -3,6 +3,7 @@ package com.xuecheng.media;
 import com.j256.simplemagic.ContentInfo;
 import com.j256.simplemagic.ContentInfoUtil;
 import io.minio.*;
+import io.minio.errors.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,13 @@ import org.springframework.http.MediaType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @Description：
@@ -85,6 +93,65 @@ public class MinioTest
 //        }
 
 
+    }
+
+
+    /**
+     * 将分块文件上传到minio
+     */
+    @Test
+    public void uploadChunk() throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException
+    {
+        File chunkFilePath = new File("D:\\视频\\分块测试即删\\");
+        int chunkFileCount = chunkFilePath.listFiles().length;
+
+        for (int i = 0; i < chunkFileCount; i++)
+        {
+            minioClient.uploadObject(
+                    UploadObjectArgs.builder()
+                            .bucket("testbucket")
+                            .object("chunk/" + i)
+                            .filename("D:\\视频\\分块测试即删\\" + i)
+                            .build()
+            );
+        }
+    }
+
+    /**
+     * 合并分块文件
+     */
+    @Test
+    public void testMerge() throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException
+    {
+        File chunkFilePath = new File("D:\\视频\\分块测试即删\\");
+        int chunkFileCount = chunkFilePath.listFiles().length;
+
+//        List<ComposeSource> composeSources = new ArrayList<>();
+//
+//        for (int i = 0; i < chunkFileCount; i++)
+//        {
+//            ComposeSource chunk = ComposeSource.builder()
+//                    .bucket("testbucket")
+//                    .object("chunk/" + i)
+//                    .build();
+//            composeSources.add(chunk);
+//        }
+
+        List<ComposeSource> composeSourceList = Stream.iterate(0, i -> i + 1).limit(chunkFileCount)
+                .map(i -> ComposeSource.builder()
+                        .bucket("testbucket")
+                        .object("chunk/" + i)
+                        .build())
+                .collect(Collectors.toList());
+
+
+        ComposeObjectArgs composeObjectArgs = ComposeObjectArgs.builder()
+                .bucket("testbucket")
+                .object("merge.mp4")
+                .sources(composeSourceList)
+                .build();
+        // 合并文件
+        minioClient.composeObject(composeObjectArgs);
     }
 
 }
