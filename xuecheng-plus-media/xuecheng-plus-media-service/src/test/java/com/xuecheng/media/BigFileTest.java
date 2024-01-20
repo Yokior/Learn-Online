@@ -1,5 +1,6 @@
 package com.xuecheng.media;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.jupiter.api.Test;
 
@@ -104,4 +105,8 @@ public class BigFileTest
         System.err.println("初始文件：" + sourceMD5);
         System.err.println("合并文件：" + mergeMD5);
     }
+
+
+
+
 }

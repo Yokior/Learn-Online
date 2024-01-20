@@ -22,4 +22,7 @@ public class SystemCommon
     // 资源类型 图片
     public static final String RESOURCE_TYPE_IMAGE = "001001";
 
+    // 资源类型 视频
+    public static final String RESOURCE_TYPE_VIDEO = "001002";
+
 }

@@ -81,6 +81,8 @@ public class MinioTest
                 .object("BFV.mp4")
                 .build());
 
+
+
         FileOutputStream fileOutputStream = new FileOutputStream(new File("E:\\Minio\\pp.mp4"));
         IOUtils.copy(object, fileOutputStream);
 
