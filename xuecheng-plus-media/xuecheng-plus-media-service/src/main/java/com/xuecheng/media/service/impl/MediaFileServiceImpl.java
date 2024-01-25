@@ -24,6 +24,7 @@ import io.minio.errors.*;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,7 @@ import org.springframework.util.DigestUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -177,6 +179,52 @@ public class MediaFileServiceImpl implements MediaFileService
         saveWaitingTask(mediaFiles);
 
         return mediaFiles;
+    }
+
+    /**
+     * 从minio下载文件
+     * @param bucket
+     * @param objectName
+     * @return
+     */
+    @Override
+    public File downloadFileFromMinio(String bucket, String objectName)
+    {
+        File minioFile = null;
+        FileOutputStream outputStream = null;
+
+        try
+        {
+            GetObjectResponse input = minioClient.getObject(GetObjectArgs.builder()
+                    .bucket(bucket)
+                    .object(objectName)
+                    .build());
+            // 创建临时文件
+            minioFile = File.createTempFile("minio", ".merge");
+            outputStream = new FileOutputStream(minioFile);
+            IOUtils.copy(input,outputStream);
+            return minioFile;
+        }
+        catch (Exception e)
+        {
+            XueChengPlusException.cast("文件下载失败");
+        }
+        finally
+        {
+            try
+            {
+                if (outputStream != null)
+                {
+                    outputStream.close();
+                }
+            }
+            catch (IOException e)
+            {
+                log.error("关闭流失败");
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -428,7 +476,7 @@ public class MediaFileServiceImpl implements MediaFileService
      * @param ext
      * @return
      */
-    private String  getFilePath(String md5, String ext)
+    private String getFilePath(String md5, String ext)
     {
         return md5.charAt(0) + "/" + md5.charAt(1) + "/" + md5 + "/" + md5 + ext;
     }
@@ -479,7 +527,7 @@ public class MediaFileServiceImpl implements MediaFileService
      * @param objectName
      * @return
      */
-    private Boolean uploadFile2Minio(String bucket, String localFilePath, String minType, String objectName)
+    public Boolean uploadFile2Minio(String bucket, String localFilePath, String minType, String objectName)
     {
         UploadObjectArgs uploadObjectArgs = null;
         try

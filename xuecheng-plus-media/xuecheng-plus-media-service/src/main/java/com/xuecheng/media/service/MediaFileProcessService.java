@@ -28,4 +28,15 @@ public interface MediaFileProcessService
      */
     boolean startTask(long id);
 
+
+    /**
+     * 保存任务处理结果
+     * @param taskId
+     * @param status
+     * @param fileId
+     * @param url
+     * @param errorMsg
+     */
+    void saveProcessFinishStatus(Long taskId, String status, String fileId, String url, String errorMsg);
+
 }

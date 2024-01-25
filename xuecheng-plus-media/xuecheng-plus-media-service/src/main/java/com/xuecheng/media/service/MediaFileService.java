@@ -9,6 +9,7 @@ import com.xuecheng.media.model.dto.UploadFileResultDto;
 import com.xuecheng.media.model.po.MediaFiles;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -42,6 +43,10 @@ public interface MediaFileService
 
 
     MediaFiles saveFileInfo2DB(Long companyId, UploadFileParamsDto uploadFileParamsDto, String md5, String bucket, String objectName);
+
+    File downloadFileFromMinio(String bucket, String objectName);
+
+    Boolean uploadFile2Minio(String bucket, String localFilePath, String minType, String objectName);
 
 
     /**
