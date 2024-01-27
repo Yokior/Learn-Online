@@ -170,7 +170,10 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService
         // 组装
         CourseBaseInfoDto courseBaseInfoDto = new CourseBaseInfoDto();
         BeanUtils.copyProperties(courseBase, courseBaseInfoDto);
-        BeanUtils.copyProperties(courseMarket, courseBaseInfoDto);
+        if (courseMarket != null)
+        {
+            BeanUtils.copyProperties(courseMarket, courseBaseInfoDto);
+        }
 
         // 获取课程分类名称
         LambdaQueryWrapper<CourseCategory> lqw = new LambdaQueryWrapper<>();
