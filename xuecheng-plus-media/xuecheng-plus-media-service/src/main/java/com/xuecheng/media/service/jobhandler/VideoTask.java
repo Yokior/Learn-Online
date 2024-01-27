@@ -1,12 +1,15 @@
 package com.xuecheng.media.service.jobhandler;
 
 import com.xuecheng.base.utils.Mp4VideoUtil;
+import com.xuecheng.media.mapper.MediaProcessHistoryMapper;
 import com.xuecheng.media.model.po.MediaProcess;
+import com.xuecheng.media.model.po.MediaProcessHistory;
 import com.xuecheng.media.service.MediaFileProcessService;
 import com.xuecheng.media.service.MediaFileService;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -30,12 +33,11 @@ public class VideoTask
     @Autowired
     private MediaFileService mediaFileService;
 
+    @Autowired
+    private MediaProcessHistoryMapper mediaProcessHistoryMapper;
+
     @Value("${videoprocess.ffmpegpath}")
     private String ffmpegpath;
-
-    private int processors = Runtime.getRuntime().availableProcessors();
-
-    private ExecutorService executorService = Executors.newFixedThreadPool(processors);
 
     /**
      * 视频处理任务
@@ -48,15 +50,28 @@ public class VideoTask
         int shardIndex = XxlJobHelper.getShardIndex(); // 执行器序号 0开始
         int shardTotal = XxlJobHelper.getShardTotal(); // 执行器总数
 
-        // 查询待处理的任务
-        List<MediaProcess> mediaProcessList = mediaFileProcessService.getMediaProcessList(shardIndex, shardTotal, processors);
+        int processors = Runtime.getRuntime().availableProcessors();
 
-        CountDownLatch count = new CountDownLatch(mediaProcessList.size());
+        // 查询待处理的任务
+        List<MediaProcess> mediaProcessList = mediaFileProcessService.getMediaProcessList(shardTotal, shardIndex, processors);
+
+        int size = mediaProcessList.size();
+
+        ExecutorService executorService = Executors.newFixedThreadPool(size);
+
+        if (mediaProcessList.isEmpty())
+        {
+            return;
+        }
+
+        CountDownLatch count = new CountDownLatch(size);
 
         // 创建线程池
-        mediaProcessList.forEach(mediaProcess -> {
+        mediaProcessList.forEach(mediaProcess ->
+        {
             // 将任务加入线程池
-            executorService.execute(() ->{
+            executorService.execute(() ->
+            {
                 try
                 {
                     Long taskId = mediaProcess.getId();
@@ -64,7 +79,7 @@ public class VideoTask
                     boolean b = mediaFileProcessService.startTask(taskId);
                     if (!b)
                     {
-                        log.debug("抢占任务失败，任务id:{}", taskId);
+                        log.info("抢占任务失败，任务id:{}", taskId);
                         return;
                     }
 
@@ -77,7 +92,7 @@ public class VideoTask
                     File file = mediaFileService.downloadFileFromMinio(bucket, objectName);
                     if (file == null)
                     {
-                        log.debug("下载视频失败，任务id:{}, bucket:{}, objectName:{}", taskId, bucket, objectName);
+                        log.info("下载视频失败，任务id:{}, bucket:{}, objectName:{}", taskId, bucket, objectName);
                         mediaFileProcessService.saveProcessFinishStatus(taskId, "3", fileId, null, "下载视频到本地失败");
                         return;
                     }
@@ -96,7 +111,7 @@ public class VideoTask
                     }
                     catch (IOException e)
                     {
-                        log.debug("创建临时文件异常,{}", e.getMessage());
+                        log.info("创建临时文件异常,{}", e.getMessage());
                         mediaFileProcessService.saveProcessFinishStatus(taskId, "3", fileId, null, "创建临时文件失败");
                         e.printStackTrace();
                         return;
@@ -116,7 +131,7 @@ public class VideoTask
                     String s = videoUtil.generateMp4();
                     if (!s.equals("success"))
                     {
-                        log.debug("视频转码失败,原因:{},bucket:{},objectName:{}", s, bucket, objectName);
+                        log.info("视频转码失败,原因:{},bucket:{},objectName:{}", s, bucket, objectName);
                         mediaFileProcessService.saveProcessFinishStatus(taskId, "3", fileId, null, "视频转码失败");
                         return;
                     }
@@ -125,7 +140,7 @@ public class VideoTask
                     Boolean uploadResult = mediaFileService.uploadFile2Minio(bucket, mp4File.getAbsolutePath(), "video/mp4", newObjectName);
                     if (!uploadResult)
                     {
-                        log.debug("上传mp4到minio失败,taskId:{},bucket:{},objectName:{}", taskId, bucket, objectName);
+                        log.info("上传mp4到minio失败,taskId:{},bucket:{},objectName:{}", taskId, bucket, objectName);
                         mediaFileProcessService.saveProcessFinishStatus(taskId, "3", fileId, null, "上传文件到minio失败");
                         return;
                     }
@@ -135,6 +150,11 @@ public class VideoTask
 
                     // 处理成功 保存任务处理结果
                     mediaFileProcessService.saveProcessFinishStatus(taskId, "2", fileId, url, null);
+                }
+                catch (Exception e)
+                {
+                    log.info("出现异常:{}", e.getMessage());
+                    return;
                 }
                 finally
                 {
@@ -161,6 +181,7 @@ public class VideoTask
 
     /**
      * 根据md5值获取最终文件路径
+     *
      * @param md5
      * @param ext
      * @return

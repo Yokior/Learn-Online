@@ -207,7 +207,7 @@ public class MediaFileServiceImpl implements MediaFileService
         }
         catch (Exception e)
         {
-            XueChengPlusException.cast("文件下载失败");
+            return null;
         }
         finally
         {
@@ -223,8 +223,6 @@ public class MediaFileServiceImpl implements MediaFileService
                 log.error("关闭流失败");
             }
         }
-
-        return null;
     }
 
     /**

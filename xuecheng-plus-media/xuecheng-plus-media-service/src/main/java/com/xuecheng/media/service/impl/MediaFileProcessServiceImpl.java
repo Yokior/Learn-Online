@@ -42,13 +42,12 @@ public class MediaFileProcessServiceImpl implements MediaFileProcessService
      * @return
      */
     @Override
-    public List<MediaProcess> getMediaProcessList(int shardIndex, int shardTotal, int count)
+    public List<MediaProcess> getMediaProcessList(int shardTotal, int shardIndex, int count)
     {
         // 获取待处理任务列表
-        List<MediaProcess> mediaProcessList = mediaProcessMapper.selectListByShardIndex(shardIndex, shardTotal, count);
+        List<MediaProcess> mediaProcessList = mediaProcessMapper.selectListByShardIndex(shardTotal, shardIndex, count);
 
-
-        return null;
+        return mediaProcessList;
     }
 
     /**
