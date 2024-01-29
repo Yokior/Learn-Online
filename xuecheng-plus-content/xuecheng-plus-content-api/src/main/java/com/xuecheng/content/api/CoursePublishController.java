@@ -3,8 +3,11 @@ package com.xuecheng.content.api;
 import com.xuecheng.content.model.dto.CoursePreviewDto;
 import com.xuecheng.content.service.CoursePublishService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -12,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @Auther：Yokior
  * @Date：2024/1/29 15:12
  */
+@Controller
 public class CoursePublishController
 {
 
@@ -19,15 +23,30 @@ public class CoursePublishController
     private CoursePublishService coursePublishService;
 
     @GetMapping("/coursepreview/{courseId}")
-    public ModelAndView preview(@PathVariable("courseId") Long courseId){
+    public ModelAndView preview(@PathVariable("courseId") Long courseId)
+    {
 
         //获取课程预览信息
         CoursePreviewDto coursePreviewInfo = coursePublishService.getCoursePreviewInfo(courseId);
 
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("model",coursePreviewInfo);
+        modelAndView.addObject("model", coursePreviewInfo);
         modelAndView.setViewName("course_template");
         return modelAndView;
     }
+
+    /**
+     * 提交审核
+     * @param courseId
+     */
+    @ResponseBody
+    @PostMapping("/courseaudit/commit/{courseId}")
+    public void commitAudit(@PathVariable("courseId") Long courseId)
+    {
+        Long companyId = 1231564L;
+
+        coursePublishService.commitAudit(companyId,courseId);
+    }
+
 
 }

@@ -13,6 +13,9 @@ public class SystemCommon
     // 课程 审核状态 未提交
     public static final String AUDIT_NOT_PUBLISH = "202002";
 
+    // 课程 审核状态 已提交
+    public static final String AUDIT_IS_PUBLISH = "202003";
+
     // 课程 发布状态 未发布
     public static final String STATUS_NOT_PUBLISH = "203001";
 

@@ -1,6 +1,9 @@
 package com.xuecheng.content.model.entity;
 
 import java.time.LocalDateTime;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -54,6 +57,7 @@ public class CoursePublishPre {
     //教师信息，json格式
     private String teachers;
     //提交时间
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createDate;
     //审核时间
     private LocalDateTime auditDate;

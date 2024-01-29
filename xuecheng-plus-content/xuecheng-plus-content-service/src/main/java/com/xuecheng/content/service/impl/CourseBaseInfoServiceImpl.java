@@ -176,15 +176,11 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService
         }
 
         // 获取课程分类名称
-        LambdaQueryWrapper<CourseCategory> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(StringUtils.hasText(courseBaseInfoDto.getSt()),CourseCategory::getId,courseBaseInfoDto.getSt());
-        CourseCategory stCategory = courseCategoryMapper.selectOne(lqw);
-        courseBaseInfoDto.setStName(stCategory.getName());
+        CourseCategory st = courseCategoryMapper.selectById(courseBaseInfoDto.getSt());
+        courseBaseInfoDto.setStName(st.getName());
 
-        lqw = new LambdaQueryWrapper<CourseCategory>();
-        lqw.eq(StringUtils.hasText(courseBaseInfoDto.getMt()),CourseCategory::getId,courseBaseInfoDto.getMt());
-        CourseCategory mtCategory = courseCategoryMapper.selectOne(lqw);
-        courseBaseInfoDto.setMtName(mtCategory.getName());
+        CourseCategory mt = courseCategoryMapper.selectById(courseBaseInfoDto.getMt());
+        courseBaseInfoDto.setMtName(mt.getName());
 
         return courseBaseInfoDto;
     }
