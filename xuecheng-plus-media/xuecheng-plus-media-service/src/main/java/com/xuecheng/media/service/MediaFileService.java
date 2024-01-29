@@ -48,6 +48,7 @@ public interface MediaFileService
 
     Boolean uploadFile2Minio(String bucket, String localFilePath, String minType, String objectName);
 
+    MediaFiles getFileById(String id);
 
     /**
      * @param fileMd5 文件的md5

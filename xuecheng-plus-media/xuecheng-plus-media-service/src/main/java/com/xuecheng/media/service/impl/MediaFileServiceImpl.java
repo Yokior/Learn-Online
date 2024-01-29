@@ -550,6 +550,24 @@ public class MediaFileServiceImpl implements MediaFileService
     }
 
     /**
+     * 根据id获取mediafile
+     * @param id
+     * @return
+     */
+    @Override
+    public MediaFiles getFileById(String id)
+    {
+
+        MediaFiles mediaFiles = mediaFilesMapper.selectById(id);
+        if (mediaFiles == null)
+        {
+            XueChengPlusException.cast("文件不存在");
+        }
+
+        return mediaFiles;
+    }
+
+    /**
      * 根据后缀生成minType
      *
      * @param extension
