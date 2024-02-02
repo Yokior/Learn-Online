@@ -10,10 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class MediaServiceClientFallback implements MediaServiceClient
 {
     @Override
-    public String upload(MultipartFile filedata)
+    public String upload(MultipartFile filedata, String objectname)
     {
         // 这种方法无法拿到熔断异常
-
 
         return null;
     }

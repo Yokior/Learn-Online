@@ -20,7 +20,7 @@ public class MediaServiceClientFallbackFactory implements FallbackFactory<MediaS
         return new MediaServiceClient()
         {
             @Override
-            public String upload(MultipartFile filedata)
+            public String upload(MultipartFile filedata, String objectName)
             {
                 log.error("远程调用上传文件接口发生熔断:{}", throwable.toString());
                 return null;

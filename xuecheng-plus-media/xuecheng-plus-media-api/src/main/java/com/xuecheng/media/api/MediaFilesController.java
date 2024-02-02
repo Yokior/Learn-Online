@@ -11,10 +11,8 @@ import com.xuecheng.media.service.MediaFileService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -45,8 +43,8 @@ public class MediaFilesController
     }
 
     @ApiOperation("上传图片")
-    @PostMapping("/upload/coursefile")
-    public UploadFileResultDto upload(@RequestParam("filedata") MultipartFile filedata) throws IOException
+    @PostMapping(value = "/upload/coursefile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public UploadFileResultDto upload(@RequestPart("filedata") MultipartFile filedata, @RequestParam(value = "objectName", required = false) String objectName) throws IOException
     {
         // 准备文件的上传信息
         UploadFileParamsDto uploadFileParamsDto = new UploadFileParamsDto();
@@ -61,7 +59,7 @@ public class MediaFilesController
 
         Long companyId = 1232141425L;
 
-        UploadFileResultDto uploadFileResultDto = mediaFileService.uploadFile(companyId, uploadFileParamsDto, filePath);
+        UploadFileResultDto uploadFileResultDto = mediaFileService.uploadFile(companyId, uploadFileParamsDto, filePath, objectName);
 
         return uploadFileResultDto;
     }

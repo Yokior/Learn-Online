@@ -1,12 +1,17 @@
 package com.xuecheng.content.service.jobhandler;
 
+import com.xuecheng.base.exception.XueChengPlusException;
+import com.xuecheng.content.service.CoursePublishService;
 import com.xuecheng.messagesdk.model.po.MqMessage;
 import com.xuecheng.messagesdk.service.MessageProcessAbstract;
 import com.xuecheng.messagesdk.service.MqMessageService;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
 
 /**
  * @Description：
@@ -17,6 +22,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CoursePublishTask extends MessageProcessAbstract
 {
+
+    @Autowired
+    private CoursePublishService coursePublishService;
 
     @XxlJob("CoursePublishJobHandler")
     public void coursePublishJobHandler()
@@ -94,9 +102,14 @@ public class CoursePublishTask extends MessageProcessAbstract
         MqMessageService mqMessageService = getMqMessageService();
 
         // 进行课程静态化
+        File file = coursePublishService.generateCourseHtml(courseId);
+        if (file == null)
+        {
+            XueChengPlusException.cast("生成的静态页面为空");
+        }
 
-
-
+        // 上传minio
+        coursePublishService.uploadCourseHtml(courseId,file);
 
         mqMessageService.completedStageOne(taskId);
     }
@@ -108,7 +121,7 @@ public class CoursePublishTask extends MessageProcessAbstract
      * @param mqMessage
      * @param courseId
      */
-    public void saveCourseIndex(MqMessage mqMessage, Long courseId)
+    private void saveCourseIndex(MqMessage mqMessage, Long courseId)
     {
         Long taskId = mqMessage.getId();
         MqMessageService mqMessageService = getMqMessageService();
@@ -128,7 +141,7 @@ public class CoursePublishTask extends MessageProcessAbstract
      * @param mqMessage
      * @param courseId
      */
-    public void saveCourseCache(MqMessage mqMessage, Long courseId)
+    private void saveCourseCache(MqMessage mqMessage, Long courseId)
     {
         Long taskId = mqMessage.getId();
         MqMessageService mqMessageService = getMqMessageService();

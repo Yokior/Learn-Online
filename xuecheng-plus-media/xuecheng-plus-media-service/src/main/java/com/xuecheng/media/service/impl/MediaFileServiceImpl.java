@@ -106,7 +106,7 @@ public class MediaFileServiceImpl implements MediaFileService
      * @return
      */
     @Override
-    public UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto, String localFilePath)
+    public UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto, String localFilePath, String objectName)
     {
         String filename = uploadFileParamsDto.getFilename();
         String extension = filename.substring(filename.lastIndexOf("."));
@@ -118,7 +118,10 @@ public class MediaFileServiceImpl implements MediaFileService
         // 获取文件的md5值用于命名
         String md5 = getFileMD5(new File(localFilePath));
         // 生成文件名
-        String objectName = defaultFolderPath + md5 + extension;
+        if (objectName == null)
+        {
+            objectName = defaultFolderPath + md5 + extension;
+        }
 
         Boolean result = uploadFile2Minio(bucket_mediafiles, localFilePath, minType, objectName);
         if (!result)
