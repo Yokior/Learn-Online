@@ -8,8 +8,10 @@ import com.xuecheng.content.model.dto.EditCourseDto;
 import com.xuecheng.content.model.dto.QueryCourseParamsDto;
 import com.xuecheng.content.model.entity.CourseBase;
 import com.xuecheng.content.service.CourseBaseInfoService;
+import com.xuecheng.content.util.SecurityUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "课程信息管理接口", tags = "课程信息管理接口")
 @RestController
 @RequestMapping("/course")
+@Slf4j
 public class CourseBaseInfoController
 {
 
@@ -39,6 +42,9 @@ public class CourseBaseInfoController
     @PostMapping("/list")
     public PageResult<CourseBase> list(PageParams pageParams, @RequestBody QueryCourseParamsDto queryCourseParamsDto)
     {
+        SecurityUtil.XcUser user = SecurityUtil.getUser();
+        log.info("公司id:{}", user.getCompanyId());
+
         PageResult<CourseBase> pageResult = courseBaseInfoService.queryCourseBaseList(pageParams, queryCourseParamsDto);
 
         return pageResult;
