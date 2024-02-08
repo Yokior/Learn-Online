@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+@EnableFeignClients(basePackages = "com.xuecheng.ucenter.feignclient")
 @SpringBootApplication
 public class AuthApplication
 {
