@@ -3,9 +3,11 @@ package com.xuecheng.ucenter.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xuecheng.ucenter.AuthService;
+import com.xuecheng.ucenter.mapper.XcMenuMapper;
 import com.xuecheng.ucenter.mapper.XcUserMapper;
 import com.xuecheng.ucenter.model.dto.AuthParamsDto;
 import com.xuecheng.ucenter.model.dto.XcUserExt;
+import com.xuecheng.ucenter.model.po.XcMenu;
 import com.xuecheng.ucenter.model.po.XcUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -16,6 +18,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Description：
@@ -29,6 +34,9 @@ public class UserDetailServiceImpl implements UserDetailsService
 
     @Autowired
     private XcUserMapper xcUserMapper;
+
+    @Autowired
+    private XcMenuMapper xcMenuMapper;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -78,8 +86,19 @@ public class UserDetailServiceImpl implements UserDetailsService
         String password = user.getPassword();
         user.setPassword(null);
         String userJson = JSON.toJSONString(user);
-        String authorities = "test";
-        UserDetails userDetails = User.withUsername(userJson).password(password).authorities(authorities).build();
+        // 根据id查询用户权限
+        String authorities = null;
+        List<XcMenu> xcMenuList = xcMenuMapper.selectPermissionByUserId(user.getId());
+        if (xcMenuList.isEmpty())
+        {
+            throw new RuntimeException("用户权限不存在");
+        }
+        List<String> permissionList = xcMenuList.stream()
+                .map(XcMenu::getCode)
+                .collect(Collectors.toList());
+        String[] permissionString = permissionList.toArray(new String[0]);
+
+        UserDetails userDetails = User.withUsername(userJson).password(password).authorities(permissionString).build();
         return userDetails;
     }
 }

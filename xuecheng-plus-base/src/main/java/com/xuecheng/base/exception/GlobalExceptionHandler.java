@@ -49,8 +49,12 @@ public class GlobalExceptionHandler
     @ExceptionHandler(Exception.class)
     public RestErrorResponse handlerException(Exception e)
     {
-        log.error("系统异常：{}",e);
+        if ("不允许访问".equals(e.getMessage()))
+        {
+            return new RestErrorResponse(CommonError.ACCESS_DENIED_ERROR);
+        }
 
+        log.error("系统异常：{}",e.getMessage());
         return new RestErrorResponse(CommonError.UNKOWN_ERROR);
     }
 }

@@ -66,9 +66,9 @@ public class ContentServiceTestApplication
         pageParams.setPageNo(1L);
         pageParams.setPageSize(5L);
 
-        PageResult<CourseBase> pageResult = courseBaseInfoService.queryCourseBaseList(pageParams, queryCourseParamsDto);
+//        PageResult<CourseBase> pageResult = courseBaseInfoService.queryCourseBaseList(pageParams, queryCourseParamsDto);
 
-        System.out.println(pageResult);
+//        System.out.println(pageResult);
 
     }
 }

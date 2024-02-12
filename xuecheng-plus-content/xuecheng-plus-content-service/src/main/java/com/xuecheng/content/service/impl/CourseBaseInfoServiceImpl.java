@@ -49,13 +49,14 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService
      * @return
      */
     @Override
-    public PageResult<CourseBase> queryCourseBaseList(PageParams pageParams, QueryCourseParamsDto queryCourseParamsDto)
+    public PageResult<CourseBase> queryCourseBaseList(Long companyId,PageParams pageParams, QueryCourseParamsDto queryCourseParamsDto)
     {
         // 拼装查询条件
         LambdaQueryWrapper<CourseBase> lqw = new LambdaQueryWrapper<>();
         lqw.eq(StringUtils.hasText(queryCourseParamsDto.getAuditStatus()), CourseBase::getAuditStatus, queryCourseParamsDto.getAuditStatus());
         lqw.like(StringUtils.hasText(queryCourseParamsDto.getCourseName()), CourseBase::getName, queryCourseParamsDto.getCourseName());
         lqw.eq(StringUtils.hasText(queryCourseParamsDto.getPublishStatus()), CourseBase::getStatus, queryCourseParamsDto.getPublishStatus());
+        lqw.eq(companyId != null, CourseBase::getCompanyId, companyId);
 
         // 分页
         Page<CourseBase> page = new Page<>(pageParams.getPageNo(), pageParams.getPageSize());
