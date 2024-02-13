@@ -26,19 +26,24 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "我的课程表接口", tags = "我的课程表接口")
 @Slf4j
 @RestController
-public class MyCourseTablesController {
+public class MyCourseTablesController
+{
 
 
     @ApiOperation("添加选课")
     @PostMapping("/choosecourse/{courseId}")
-    public XcChooseCourseDto addChooseCourse(@PathVariable("courseId") Long courseId) {
+    public XcChooseCourseDto addChooseCourse(@PathVariable("courseId") Long courseId)
+    {
+        SecurityUtil.XcUser user = SecurityUtil.getUser();
+        String userId = user.getId();
 
         return null;
     }
 
     @ApiOperation("查询学习资格")
     @PostMapping("/choosecourse/learnstatus/{courseId}")
-    public XcCourseTablesDto getLearnstatus(@PathVariable("courseId") Long courseId) {
+    public XcCourseTablesDto getLearnstatus(@PathVariable("courseId") Long courseId)
+    {
 
         return null;
 
@@ -46,7 +51,8 @@ public class MyCourseTablesController {
 
     @ApiOperation("我的课程表")
     @GetMapping("/mycoursetable")
-    public PageResult<XcCourseTables> mycoursetable(MyCourseTableParams params) {
+    public PageResult<XcCourseTables> mycoursetable(MyCourseTableParams params)
+    {
         return null;
     }
 

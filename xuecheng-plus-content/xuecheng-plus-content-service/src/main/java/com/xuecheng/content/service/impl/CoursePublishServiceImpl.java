@@ -273,6 +273,17 @@ public class CoursePublishServiceImpl implements CoursePublishService
         }
     }
 
+    @Override
+    public CoursePublish getCoursePublish(Long courseId)
+    {
+        CoursePublish coursePublish = coursePublishMapper.selectById(courseId);
+        if (coursePublish == null)
+        {
+            XueChengPlusException.cast("课程信息不存在");
+        }
+        return coursePublish;
+    }
+
 
     private void saveCoursePublishMessage(Long courseId)
     {

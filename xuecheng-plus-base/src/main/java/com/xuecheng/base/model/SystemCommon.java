@@ -7,6 +7,9 @@ package com.xuecheng.base.model;
  */
 public class SystemCommon
 {
+    // 课程状态 免费
+    public static final String COURSE_FREE = "201000";
+
     // 课程状态 收费
     public static final String COURSE_CHARGE = "201001";
 

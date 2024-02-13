@@ -1,6 +1,10 @@
 package com.xuecheng.content.model.entity;
 
 import java.time.LocalDateTime;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -54,10 +58,14 @@ public class CoursePublish {
     //教师信息，json格式
     private String teachers;
     //发布时间
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createDate;
     //上架时间
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime onlineDate;
     //下架时间
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime offlineDate;
     //发布状态
     private String status;
@@ -66,9 +74,9 @@ public class CoursePublish {
     //收费规则，对应数据字典--203
     private String charge;
     //现价
-    private Object price;
+    private Float price;
     //原价
-    private Object originalPrice;
+    private Float originalPrice;
     //课程有效期天数
     private Integer validDays;
 

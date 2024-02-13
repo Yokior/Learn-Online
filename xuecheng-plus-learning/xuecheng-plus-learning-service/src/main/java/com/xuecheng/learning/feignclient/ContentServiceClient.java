@@ -1,6 +1,6 @@
 package com.xuecheng.learning.feignclient;
 
-import com.xuecheng.content.model.po.CoursePublish;
+import com.xuecheng.content.model.entity.CoursePublish;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +17,6 @@ public interface ContentServiceClient {
 
     @ResponseBody
     @GetMapping("/content/r/coursepublish/{courseId}")
-    public CoursePublish getCoursepublish(@PathVariable("courseId") Long courseId);
+    CoursePublish getCoursepublish(@PathVariable("courseId") Long courseId);
 
 }
