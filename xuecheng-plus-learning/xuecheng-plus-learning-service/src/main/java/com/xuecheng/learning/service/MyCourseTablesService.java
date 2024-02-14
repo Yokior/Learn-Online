@@ -1,6 +1,7 @@
 package com.xuecheng.learning.service;
 
 import com.xuecheng.learning.model.dto.XcChooseCourseDto;
+import com.xuecheng.learning.model.dto.XcCourseTablesDto;
 
 /**
  * @Description：
@@ -16,4 +17,13 @@ public interface MyCourseTablesService
      * @return
      */
     XcChooseCourseDto addChooseCourse(String userId, Long courseId);
+
+
+    /**
+     * 查询课程状态
+     * @param userId
+     * @param courseId
+     * @return
+     */
+    XcCourseTablesDto getLearningStatus(String userId, Long courseId);
 }

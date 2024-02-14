@@ -8,6 +8,7 @@ import com.xuecheng.learning.feignclient.ContentServiceClient;
 import com.xuecheng.learning.mapper.XcChooseCourseMapper;
 import com.xuecheng.learning.mapper.XcCourseTablesMapper;
 import com.xuecheng.learning.model.dto.XcChooseCourseDto;
+import com.xuecheng.learning.model.dto.XcCourseTablesDto;
 import com.xuecheng.learning.model.po.XcChooseCourse;
 import com.xuecheng.learning.model.po.XcCourseTables;
 import com.xuecheng.learning.service.MyCourseTablesService;
@@ -48,24 +49,61 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService
 
         // 收费规则
         String charge = coursepublish.getCharge();
+        XcChooseCourse xcChooseCourse = null;
         if (SystemCommon.COURSE_FREE.equals(charge))
         {
             // 免费
             // 选课记录表写入信息
-            XcChooseCourse xcChooseCourse = addFreeCourse(userId, coursepublish);
+            xcChooseCourse = addFreeCourse(userId, coursepublish);
             // 我的课程表写入信息
             XcCourseTables xcCourseTables = addCourseTables(xcChooseCourse);
         }
         else
         {
             // 收费
-            XcChooseCourse xcChooseCourse = addChargeCourse(userId, coursepublish);
+            xcChooseCourse = addChargeCourse(userId, coursepublish);
         }
 
         // 判断学生的学习资格
+        XcCourseTablesDto xcCourseTablesDto = getLearningStatus(userId, courseId);
 
+        // 构造返回值
+        XcChooseCourseDto xcChooseCourseDto = new XcChooseCourseDto();
+        BeanUtils.copyProperties(xcChooseCourse, xcChooseCourseDto);
+        xcChooseCourseDto.setLearnStatus(xcCourseTablesDto.getLearnStatus());
 
-        return null;
+        return xcChooseCourseDto;
+    }
+
+    @Override
+    public XcCourseTablesDto getLearningStatus(String userId, Long courseId)
+    {
+        // 查询我的课程表
+        XcCourseTablesDto xcCourseTablesDto = new XcCourseTablesDto();
+        XcCourseTables xcCourseTables = getXcCourseTables(userId, courseId);
+        if (xcCourseTables == null)
+        {
+            // 状态：没有选课或选课后没有支付
+            xcCourseTablesDto.setLearnStatus("702002");
+            return xcCourseTablesDto;
+        }
+
+        // 如果拿到了 判断是否过期 如果过期不能继续学习 没有过期可以学习
+
+        boolean before = xcCourseTables.getValidtimeEnd().isBefore(LocalDateTime.now());
+        BeanUtils.copyProperties(xcCourseTables,xcCourseTablesDto);
+        if (before)
+        {
+            // 已过期需要申请续费或重新支付
+            xcCourseTablesDto.setLearnStatus("702003");
+        }
+        else
+        {
+            // 没有过期可以学习
+            xcCourseTablesDto.setLearnStatus("702001");
+        }
+
+        return xcCourseTablesDto;
     }
 
 
