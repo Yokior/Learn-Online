@@ -144,7 +144,35 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService
     // 添加收费课程
     public XcChooseCourse addChargeCourse(String userId, CoursePublish coursePublish)
     {
-        return null;
+        // 判断 如果已经存在收费的选课记录为待支付直接返回
+        Long courseId = coursePublish.getId();
+        LambdaQueryWrapper<XcChooseCourse> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(XcChooseCourse::getUserId, userId);
+        lqw.eq(XcChooseCourse::getCourseId, courseId);
+        lqw.eq(XcChooseCourse::getOrderType, "700002"); //  收费课程
+        lqw.eq(XcChooseCourse::getStatus, "701002"); // 待支付
+
+        List<XcChooseCourse> xcChooseCourseList = xcChooseCourseMapper.selectList(lqw);
+        if (xcChooseCourseList.size() > 0)
+        {
+            return xcChooseCourseList.get(0);
+        }
+
+        // 向选课记录表添加一条记录
+        XcChooseCourse xcChooseCourse = new XcChooseCourse();
+
+        xcChooseCourse.setUserId(userId);
+        xcChooseCourse.setCourseId(courseId);
+        xcChooseCourse.setCourseName(coursePublish.getName());
+        xcChooseCourse.setCompanyId(coursePublish.getCompanyId());
+        xcChooseCourse.setOrderType("700002");
+        xcChooseCourse.setCoursePrice(coursePublish.getPrice());
+        xcChooseCourse.setValidDays(365);
+        xcChooseCourse.setStatus("701002");
+        xcChooseCourse.setValidtimeStart(LocalDateTime.now());
+        xcChooseCourse.setValidtimeEnd(LocalDateTime.now().plusDays(365));
+
+        return xcChooseCourse;
     }
 
     /**
