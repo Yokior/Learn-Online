@@ -14,6 +14,7 @@ import com.xuecheng.learning.model.po.XcCourseTables;
 import com.xuecheng.learning.service.MyCourseTablesService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ import java.util.List;
  * @Auther：Yokior
  * @Date：2024/2/13 15:53
  */
+@Service
 public class MyCourseTablesServiceImpl implements MyCourseTablesService
 {
 
@@ -56,7 +58,7 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService
             // 选课记录表写入信息
             xcChooseCourse = addFreeCourse(userId, coursepublish);
             // 我的课程表写入信息
-            XcCourseTables xcCourseTables = addCourseTables(xcChooseCourse);
+            XcCourseTables xcCourseTables = addCourseTables(userId,xcChooseCourse);
         }
         else
         {
@@ -137,6 +139,7 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService
         xcChooseCourse.setStatus("701001");
         xcChooseCourse.setValidtimeStart(LocalDateTime.now());
         xcChooseCourse.setValidtimeEnd(LocalDateTime.now().plusDays(365));
+        xcChooseCourse.setCoursePrice(0F);
 
         int insert = xcChooseCourseMapper.insert(xcChooseCourse);
         if (insert <= 0)
@@ -148,7 +151,7 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService
     }
 
     // 添加到我的课程
-    public XcCourseTables addCourseTables(XcChooseCourse xcChooseCourse)
+    public XcCourseTables addCourseTables(String userId, XcChooseCourse xcChooseCourse)
     {
         // 选课成功才能向我的课程表添加记录
         String status = xcChooseCourse.getStatus();
@@ -165,7 +168,7 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService
         }
 
         xcCourseTables = new XcCourseTables();
-        BeanUtils.copyProperties(xcChooseCourse,xcChooseCourse);
+        BeanUtils.copyProperties(xcChooseCourse,xcCourseTables);
         xcCourseTables.setChooseCourseId(xcChooseCourse.getId());
         xcCourseTables.setCourseType(xcChooseCourse.getOrderType());
 

@@ -54,7 +54,7 @@ public class GlobalExceptionHandler
             return new RestErrorResponse(CommonError.ACCESS_DENIED_ERROR);
         }
 
-        log.error("系统异常：{}",e.getMessage());
+        log.error("系统异常：{}",e);
         return new RestErrorResponse(CommonError.UNKOWN_ERROR);
     }
 }

@@ -51,9 +51,12 @@ public class MyCourseTablesController
     @PostMapping("/choosecourse/learnstatus/{courseId}")
     public XcCourseTablesDto getLearnstatus(@PathVariable("courseId") Long courseId)
     {
+        SecurityUtil.XcUser user = SecurityUtil.getUser();
+        String userId = user.getId();
 
-        return null;
+        XcCourseTablesDto xcCourseTablesDto = myCourseTablesService.getLearningStatus(userId, courseId);
 
+        return xcCourseTablesDto;
     }
 
     @ApiOperation("我的课程表")

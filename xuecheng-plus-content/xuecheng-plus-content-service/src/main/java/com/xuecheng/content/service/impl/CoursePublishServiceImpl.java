@@ -144,7 +144,11 @@ public class CoursePublishServiceImpl implements CoursePublishService
         // 设置机构的ID
         coursePublishPre.setCompanyId(companyId);
 
-        // TODO: 本机构只能发布自己的视频
+        // 本机构只能发布自己的视频
+        if (!courseBaseInfo.equals(companyId))
+        {
+            XueChengPlusException.cast("机构ID不一致");
+        }
 
         // 查询预发布表 如果有就更新 没有就插入
         CoursePublishPre dbCoursePublishPre = coursePublishPreMapper.selectById(courseId);
