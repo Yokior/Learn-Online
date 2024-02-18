@@ -26,7 +26,7 @@ public class QRCodeUtil
 
     public static void main(String[] args) throws IOException
     {
-        String content = "http://192.168.0.104:63030/orders/alipaytest";
+        String content = "http://192.168.0.106:63030/orders/alipaytest";
         QRCodeUtil qrCodeUtil = new QRCodeUtil();
         String qrCode = qrCodeUtil.createQRCode(content, 200, 200);
         System.out.println(qrCode);
