@@ -6,10 +6,12 @@ import com.xuecheng.base.exception.XueChengPlusException;
 import com.xuecheng.base.utils.IdWorkerUtils;
 import com.xuecheng.orders.mapper.XcOrdersGoodsMapper;
 import com.xuecheng.orders.mapper.XcOrdersMapper;
+import com.xuecheng.orders.mapper.XcPayRecordMapper;
 import com.xuecheng.orders.model.dto.AddOrderDto;
 import com.xuecheng.orders.model.dto.PayRecordDto;
 import com.xuecheng.orders.model.po.XcOrders;
 import com.xuecheng.orders.model.po.XcOrdersGoods;
+import com.xuecheng.orders.model.po.XcPayRecord;
 import com.xuecheng.orders.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,21 +33,68 @@ public class OrderServiceImpl implements OrderService
     @Autowired
     private XcOrdersGoodsMapper xcOrdersGoodsMapper;
 
+    @Autowired
+    private XcPayRecordMapper xcPayRecordMapper;
+
     @Transactional
     @Override
     public PayRecordDto createOrder(String userId, AddOrderDto addOrderDto)
     {
-        // 插入订单表
+        // 添加商品订单
+        XcOrders xcOrders = saveOrders(userId, addOrderDto);
 
-
-        // 插入支付记录
-
+        // 添加支付记录
+        XcPayRecord payRecord = createPayRecord(xcOrders);
 
         // 生成二维码
 
 
         return null;
     }
+
+
+    /**
+     * 创建支付记录
+     * @param xcOrders
+     * @return
+     */
+    public XcPayRecord createPayRecord(XcOrders xcOrders)
+    {
+        // 订单id
+        Long ordersId = xcOrders.getId();
+        XcOrders dbXcOrders = xcOrdersMapper.selectById(ordersId);
+        if (dbXcOrders == null)
+        {
+            XueChengPlusException.cast("订单不存在");
+        }
+
+        // 订单状态
+        String status = dbXcOrders.getStatus();
+        // 如果订单支付结果为成功 不再添加支付记录 避免重复支付
+        if ("600002".equals(status))
+        {
+            XueChengPlusException.cast("订单已支付");
+        }
+
+        // 添加支付记录
+        XcPayRecord xcPayRecord = new XcPayRecord();
+        xcPayRecord.setId(IdWorkerUtils.getInstance().nextId());
+        xcPayRecord.setOrderId(ordersId);
+        xcPayRecord.setOrderName(dbXcOrders.getOrderName());
+        xcPayRecord.setTotalPrice(dbXcOrders.getTotalPrice());
+        xcPayRecord.setCurrency("CNY");
+        xcPayRecord.setStatus("601001"); // 未支付
+        xcPayRecord.setUserId(dbXcOrders.getUserId());
+
+        int insert = xcPayRecordMapper.insert(xcPayRecord);
+        if (insert <= 0)
+        {
+            XueChengPlusException.cast("插入支付记录失败");
+        }
+
+        return xcPayRecord;
+    }
+
 
 
     /**
