@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xuecheng.base.exception.XueChengPlusException;
 import com.xuecheng.base.utils.IdWorkerUtils;
+import com.xuecheng.base.utils.QRCodeUtil;
 import com.xuecheng.orders.mapper.XcOrdersGoodsMapper;
 import com.xuecheng.orders.mapper.XcOrdersMapper;
 import com.xuecheng.orders.mapper.XcPayRecordMapper;
@@ -13,10 +14,13 @@ import com.xuecheng.orders.model.po.XcOrders;
 import com.xuecheng.orders.model.po.XcOrdersGoods;
 import com.xuecheng.orders.model.po.XcPayRecord;
 import com.xuecheng.orders.service.OrderService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -36,6 +40,9 @@ public class OrderServiceImpl implements OrderService
     @Autowired
     private XcPayRecordMapper xcPayRecordMapper;
 
+    @Value("${pay.qrcodeurl}")
+    private String qrcodeurl;
+
     @Transactional
     @Override
     public PayRecordDto createOrder(String userId, AddOrderDto addOrderDto)
@@ -45,11 +52,27 @@ public class OrderServiceImpl implements OrderService
 
         // 添加支付记录
         XcPayRecord payRecord = createPayRecord(xcOrders);
+        Long payNo = payRecord.getPayNo();
 
         // 生成二维码
+        String url = String.format(qrcodeurl, payNo);
+        QRCodeUtil qrCodeUtil = new QRCodeUtil();
+        String qrCode = null;
+        try
+        {
+            qrCode = qrCodeUtil.createQRCode(url, 200, 200);
+        }
+        catch (IOException e)
+        {
+            XueChengPlusException.cast("生成二维码失败");
+        }
 
+        // 返回包含二维码
+        PayRecordDto payRecordDto = new PayRecordDto();
+        BeanUtils.copyProperties(payRecord, payRecordDto);
+        payRecordDto.setQrcode(qrCode);
 
-        return null;
+        return payRecordDto;
     }
 
 
@@ -78,7 +101,7 @@ public class OrderServiceImpl implements OrderService
 
         // 添加支付记录
         XcPayRecord xcPayRecord = new XcPayRecord();
-        xcPayRecord.setId(IdWorkerUtils.getInstance().nextId());
+        xcPayRecord.setPayNo(IdWorkerUtils.getInstance().nextId());
         xcPayRecord.setOrderId(ordersId);
         xcPayRecord.setOrderName(dbXcOrders.getOrderName());
         xcPayRecord.setTotalPrice(dbXcOrders.getTotalPrice());
