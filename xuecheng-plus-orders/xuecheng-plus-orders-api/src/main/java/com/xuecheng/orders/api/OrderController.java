@@ -97,4 +97,12 @@ public class OrderController
         httpResponse.getWriter().flush();
     }
 
+    @ApiOperation("查询支付结果")
+    @GetMapping("/payresult")
+    @ResponseBody
+    public PayRecordDto payresult(String payNo)
+    {
+
+    }
+
 }

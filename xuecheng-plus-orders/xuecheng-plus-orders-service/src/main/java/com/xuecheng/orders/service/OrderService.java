@@ -27,4 +27,11 @@ public interface OrderService
      * @return
      */
     XcPayRecord getPayRecordByPayno(String payNo);
+
+    /**
+     * 请求支付宝查询支付结果
+     * @param payNo
+     * @return
+     */
+    PayRecordDto queryPayResult(String payNo);
 }
