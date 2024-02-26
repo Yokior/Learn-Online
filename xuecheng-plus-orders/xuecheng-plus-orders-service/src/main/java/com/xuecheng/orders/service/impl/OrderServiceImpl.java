@@ -301,6 +301,7 @@ public class OrderServiceImpl implements OrderService
      * @param payStatusDto
      */
     @Transactional
+    @Override
     public void saveAlipayStatus(PayStatusDto payStatusDto)
     {
         String payNo = payStatusDto.getOut_trade_no();
