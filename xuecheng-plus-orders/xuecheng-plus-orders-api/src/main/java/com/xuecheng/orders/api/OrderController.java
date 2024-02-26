@@ -102,7 +102,8 @@ public class OrderController
     @ResponseBody
     public PayRecordDto payresult(String payNo)
     {
-
+        PayRecordDto payRecordDto = orderService.queryPayResult(payNo);
+        return payRecordDto;
     }
 
 }
