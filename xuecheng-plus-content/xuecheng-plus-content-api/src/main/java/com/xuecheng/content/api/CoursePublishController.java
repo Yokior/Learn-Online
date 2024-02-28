@@ -24,6 +24,18 @@ public class CoursePublishController
     @Autowired
     private CoursePublishService coursePublishService;
 
+    @ApiOperation("获取课程发布信息")
+    @ResponseBody
+    @GetMapping("/course/whole/{courseId}")
+    public CoursePreviewDto getCoursePublish(@PathVariable("courseId") Long courseId)
+    {
+        // 查询课程发布代码
+        CoursePreviewDto coursePreviewInfo = coursePublishService.getCoursePreviewInfo(courseId);
+
+        return coursePreviewInfo;
+    }
+
+
     @GetMapping("/coursepreview/{courseId}")
     public ModelAndView preview(@PathVariable("courseId") Long courseId)
     {
