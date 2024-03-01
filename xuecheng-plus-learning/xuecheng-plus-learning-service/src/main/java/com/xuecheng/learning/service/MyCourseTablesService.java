@@ -1,7 +1,10 @@
 package com.xuecheng.learning.service;
 
+import com.xuecheng.base.model.PageResult;
+import com.xuecheng.learning.model.dto.MyCourseTableParams;
 import com.xuecheng.learning.model.dto.XcChooseCourseDto;
 import com.xuecheng.learning.model.dto.XcCourseTablesDto;
+import com.xuecheng.learning.model.po.XcCourseTables;
 
 /**
  * @Description：
@@ -26,4 +29,6 @@ public interface MyCourseTablesService
      * @return
      */
     XcCourseTablesDto getLearningStatus(String userId, Long courseId);
+
+    PageResult<XcCourseTables> mycoursetables(MyCourseTableParams params)
 }
