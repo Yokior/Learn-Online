@@ -49,4 +49,10 @@ public interface CoursePublishService
      */
     CoursePublish getCoursePublish(Long courseId);
 
+    /**
+     * 查询课程发布信息 缓存
+     * @param courseId
+     * @return
+     */
+    CoursePublish getCoursePublishCache(Long courseId);
 }

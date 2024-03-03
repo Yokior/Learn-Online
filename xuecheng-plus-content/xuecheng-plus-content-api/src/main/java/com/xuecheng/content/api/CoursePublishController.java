@@ -77,7 +77,8 @@ public class CoursePublishController
     @GetMapping("/r/coursepublish/{courseId}")
     public CoursePublish getCoursepublish(@PathVariable("courseId") Long courseId)
     {
-        CoursePublish coursePublish = coursePublishService.getCoursePublish(courseId);
+//        CoursePublish coursePublish = coursePublishService.getCoursePublish(courseId);
+        CoursePublish coursePublish = coursePublishService.getCoursePublishCache(courseId);
         return coursePublish;
     }
 

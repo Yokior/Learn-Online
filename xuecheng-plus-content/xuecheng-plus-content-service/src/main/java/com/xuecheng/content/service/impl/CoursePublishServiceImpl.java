@@ -29,6 +29,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
@@ -40,6 +41,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Description：
@@ -74,6 +76,9 @@ public class CoursePublishServiceImpl implements CoursePublishService
 
     @Autowired
     private MediaServiceClient mediaServiceClient;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public CoursePreviewDto getCoursePreviewInfo(Long courseId)
@@ -285,6 +290,33 @@ public class CoursePublishServiceImpl implements CoursePublishService
         {
             XueChengPlusException.cast("课程信息不存在");
         }
+        return coursePublish;
+    }
+
+    @Override
+    public CoursePublish getCoursePublishCache(Long courseId)
+    {
+        Object jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
+        // 缓存中有数据 直接从redis中获取
+        if (jsonObj != null)
+        {
+            String jsonString = jsonObj.toString();
+            if ("null".equals(jsonString))
+            {
+                return null;
+            }
+            CoursePublish coursePublish = JSON.parseObject(jsonString, CoursePublish.class);
+            return coursePublish;
+        }
+
+        // 从数据库查询
+        CoursePublish coursePublish = getCoursePublish(courseId);
+//        if (coursePublish != null)
+//        {
+            // 存入redis缓存
+            redisTemplate.opsForValue().set("course:" + courseId, JSON.toJSONString(coursePublish),30, TimeUnit.SECONDS);
+//        }
+
         return coursePublish;
     }
 
