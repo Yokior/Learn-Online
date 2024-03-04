@@ -41,6 +41,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -309,15 +310,30 @@ public class CoursePublishServiceImpl implements CoursePublishService
             return coursePublish;
         }
 
-        // 从数据库查询
-        CoursePublish coursePublish = getCoursePublish(courseId);
-//        if (coursePublish != null)
-//        {
-            // 存入redis缓存
-            redisTemplate.opsForValue().set("course:" + courseId, JSON.toJSONString(coursePublish),30, TimeUnit.SECONDS);
-//        }
+        synchronized (this)
+        {
+            // 再次查询redis 如果已经有线程放入redis则不需要查询数据库
+            jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
+            // 缓存中有数据 直接从redis中获取
+            if (jsonObj != null)
+            {
+                String jsonString = jsonObj.toString();
+                if ("null".equals(jsonString))
+                {
+                    return null;
+                }
+                CoursePublish coursePublish = JSON.parseObject(jsonString, CoursePublish.class);
+                return coursePublish;
+            }
 
-        return coursePublish;
+            // 从数据库查询
+            CoursePublish coursePublish = getCoursePublish(courseId);
+            // 存入redis缓存
+            redisTemplate.opsForValue().set("course:" + courseId, JSON.toJSONString(coursePublish),30 + new Random().nextInt(100), TimeUnit.SECONDS);
+            return coursePublish;
+        }
+
+
     }
 
 
