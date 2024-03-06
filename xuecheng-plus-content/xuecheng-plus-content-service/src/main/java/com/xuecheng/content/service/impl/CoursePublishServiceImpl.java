@@ -27,6 +27,8 @@ import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -80,6 +82,10 @@ public class CoursePublishServiceImpl implements CoursePublishService
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private RedissonClient redissonClient;
+
 
     @Override
     public CoursePreviewDto getCoursePreviewInfo(Long courseId)
@@ -310,8 +316,13 @@ public class CoursePublishServiceImpl implements CoursePublishService
             return coursePublish;
         }
 
-        synchronized (this)
+        RLock lock = redissonClient.getLock("coursequerylock:" + courseId);
+        // 获取分布式锁
+        lock.lock();
+        try
         {
+//        synchronized (this)
+//        {
             // 再次查询redis 如果已经有线程放入redis则不需要查询数据库
             jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
             // 缓存中有数据 直接从redis中获取
@@ -329,8 +340,14 @@ public class CoursePublishServiceImpl implements CoursePublishService
             // 从数据库查询
             CoursePublish coursePublish = getCoursePublish(courseId);
             // 存入redis缓存
-            redisTemplate.opsForValue().set("course:" + courseId, JSON.toJSONString(coursePublish),30 + new Random().nextInt(100), TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set("course:" + courseId, JSON.toJSONString(coursePublish), 30 + new Random().nextInt(100), TimeUnit.SECONDS);
             return coursePublish;
+//        }
+        }
+        finally
+        {
+            // 手动释放锁
+            lock.unlock();
         }
 
 
